@@ -1,0 +1,44 @@
+#!/bin/bash
+#
+# Simple script to install/upgrade SBT automatically
+#
+
+#install_dir=/usr/local
+install_dir=~/local
+
+url=http://code.google.com/p/simple-build-tool/
+
+
+jarurl=`curl -s $url | grep "<a title=\"Download\"" | sed 's/.*href=\"\([^\"]*\).*/\1/'`
+filename=`echo $jarurl | sed 's/.*\/\(.*\)/\1/'`
+
+mkdir -p $install_dir/lib/sbt/
+mkdir -p $install_dir/bin
+
+cd $install_dir/lib/sbt/
+if [ ! -f $filename ]; then
+  echo "Downloading latest SBT revision $filename"
+  wget -q $jarurl  
+  if [ ! -f $filename ]; then
+    echo "Something went wrong. $filename not present locally"
+    exit -1
+  fi
+  if [ -h sbt-launcher.jar ]; then
+    rm sbt-launcher.jar
+  fi
+  ln -s $filename sbt-launcher.jar
+else
+  echo "Latest SBT revision $filename already installed"
+fi
+
+if [ ! -f $install_dir/bin/sbt ]; then
+  cat > $install_dir/bin/sbt << EOF
+#!/bin/sh
+java -Xmx256M -jar `dirname \$0`/../lib/sbt/sbt-launcher.jar "\$@"
+EOF
+
+  chmod +x $install_dir/bin/sbt
+  echo "$install_dir/bin/sbt script created. SBT ready to use!"
+else
+  echo "$install_dir/bin/sbt already exists. Verify it is properly configured"
+fi

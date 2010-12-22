@@ -1,0 +1,16 @@
+if [ -f /etc/init.d/mongod ]; then
+  rm /etc/init.d/mongod
+fi
+if [ -f /etc/default/mongod ]; then
+  rm /etc/default/mongod
+fi
+if [ -d /var/lib/mongod ]; then
+  rm -r /var/lib/mongod
+fi
+if [ -d /opt/mongod ]; then
+  rm -r /opt/mongod
+fi
+id mongod
+if [ $? -eq 0 ]; then
+  deluser mongod
+fi

@@ -1,0 +1,35 @@
+INSTALL_DIR=/opt/mongod
+DATA_DIR=/var/lib/mongod
+FILE=mongodb-linux-x86_64-1.6.5.tgz
+#FILE=mongodb-linux-i686-1.6.5.tgz
+
+if [ -d $INSTALL_DIR ]; then
+  echo "$INSTALL_DIR exists, not installing"
+  exit -1
+fi
+if [ -d $DATA_DIR ]; then
+  echo "$DATA_DIR exists, not installing"
+  exit -1
+fi
+if [ -f /etc/init.d/mongod ]; then
+  echo "/etc/init.d/mongod exists, not installing"
+  exit -1
+fi
+id mongod
+if [ $? -eq 0 ]; then
+  echo "User mongod already exists, not installing"
+  exit -1
+fi
+
+mkdir -p $INSTALL_DIR
+tar --strip-components=1 -xvf $FILE -C $INSTALL_DIR
+
+cp -r files/* /
+chmod +x /etc/init.d/mongod
+mkdir /var/lib/mongod
+adduser mongod --disabled-password --home /var/lib/mongod --gecos ""
+chown -R mongod:nogroup /var/lib/mongod
+
+update-rc.d mongod defaults
+
+service start mongod

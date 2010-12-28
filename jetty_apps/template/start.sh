@@ -1,3 +1,5 @@
+# this is jetty 7 specific http://jira.codehaus.org/browse/JETTY-1309
+# we might need to update that script for STOP.PORT STOP.KEY to work as well in jetty 7
 export JETTY_HOME=`pwd`/jetty
 export JAVA_HOME="/opt/latest/java"
 export PATH=$JAVA_HOME/bin:$PATH
